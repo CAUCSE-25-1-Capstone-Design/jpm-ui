@@ -1,8 +1,9 @@
-module org.jpm.jpmui {
+module jpm.ui {
     requires javafx.controls;
     requires javafx.fxml;
+    requires java.logging;
 
 
-    opens org.jpm.jpmui to javafx.fxml;
-    exports org.jpm.jpmui;
+    opens jpm.ui to javafx.fxml;
+    exports jpm.ui;
 }
