@@ -1,0 +1,105 @@
+/* 전체 UI 스타일 */
+.root {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: transparent;
+}
+
+/* 메인 뷰 스타일 */
+#main-view {
+    -fx-background-color: transparent;
+}
+
+/* 채팅 목록 스타일 */
+#chat-list-view {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 10px;
+}
+
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 8px 0px;
+}
+
+/* 메시지 말풍선 기본 스타일 */
+.message-bubble {
+    -fx-background-radius: 15px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 3, 0, 0, 1);
+}
+
+/* 사용자 메시지 말풍선 */
+.user-bubble {
+    -fx-background-color: #4a86e8;
+    -fx-background-radius: 15px 0px 15px 15px;
+}
+
+.user-text {
+    -fx-fill: white;
+    -fx-font-size: 14px;
+}
+
+/* JPM 메시지 스타일 - 말풍선 없음 */
+.jpm-text {
+    -fx-fill: #f0f0f0; /* 밝은 색상으로 변경 */
+    -fx-font-size: 14px;
+}
+
+/* 시스템 메시지 스타일 */
+.system-text {
+    -fx-fill: rgba(200, 200, 200, 0.8);
+    -fx-font-style: italic;
+    -fx-font-size: 13px;
+}
+
+/* 입력 필드 스타일 */
+#input-field {
+    -fx-background-color: rgba(80, 80, 80, 0.5);
+    -fx-text-fill: white;
+    -fx-background-radius: 20px;
+    -fx-padding: 8px 15px;
+    -fx-prompt-text-fill: rgba(200, 200, 200, 0.7);
+}
+
+#input-field:focused {
+    -fx-background-color: rgba(100, 100, 100, 0.6);
+}
+
+/* 전송 버튼 스타일 */
+#send-button {
+    -fx-background-color: #4a86e8;
+    -fx-text-fill: white;
+    -fx-background-radius: 20px;
+    -fx-padding: 8px 15px;
+    -fx-font-weight: bold;
+}
+
+#send-button:hover {
+    -fx-background-color: #3a76d8;
+}
+
+/* 스크롤바 스타일 */
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: rgba(150, 150, 150, 0.3);
+    -fx-background-radius: 5px;
+}
+
+.scroll-bar .track {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-background-color: rgba(150, 150, 150, 0.3);
+    -fx-shape: "";
+}
