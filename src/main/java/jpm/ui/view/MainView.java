@@ -8,6 +8,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import javafx.scene.text.TextAlignment;
 import jpm.ui.model.ChatMessage;
 import jpm.ui.model.ProcessManager;
 
@@ -171,13 +173,18 @@ public class MainView extends BorderPane {
                         // 동적 크기의 말풍선 생성
                         StackPane bubble = new StackPane();
 
-                        // 내용에 맞게 텍스트 랩핑 (최대 길이 설정)
-                        text.setWrappingWidth(Math.min(text.getLayoutBounds().getWidth() + 50, 500));
+                        // TextFlow를 사용하여 텍스트 우측 정렬 구현
+                        TextFlow textFlow = new TextFlow(text);
+                        textFlow.setTextAlignment(TextAlignment.RIGHT);
+                        textFlow.setPrefWidth(Control.USE_COMPUTED_SIZE);
+                        textFlow.setMaxWidth(500); // 최대 너비 제한
+
+                        // 텍스트 스타일 적용
                         text.getStyleClass().add("user-text");
 
-                        bubble.getChildren().add(text);
+                        bubble.getChildren().add(textFlow);
                         bubble.getStyleClass().addAll("message-bubble", "user-bubble");
-                        bubble.setPadding(new Insets(10, 15, 10, 15));
+                        bubble.setPadding(new Insets(7.5, 12.5, 7.5, 12.5));
 
                         container.getChildren().add(bubble);
                         break;
