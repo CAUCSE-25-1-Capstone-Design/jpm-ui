@@ -68,6 +68,15 @@ public class JpmApplication extends Application {
             primaryStage.setFullScreenExitHint(""); // 전체화면 힌트 제거
             primaryStage.setScene(scene);
 
+            // ESC 키로 전체화면 해제 시 크기 조정 이벤트 처리
+            primaryStage.fullScreenProperty().addListener((observable, oldValue, newValue) -> {
+                if (oldValue && !newValue) {  // 전체화면에서 일반 화면으로 전환 시
+                    primaryStage.setWidth(windowWidth);
+                    primaryStage.setHeight(windowHeight);
+                    primaryStage.centerOnScreen(); // 화면 중앙에 배치
+                }
+            });
+
             // 윈도우 드래그 기능 구현
             implementWindowDrag(root, primaryStage);
 
