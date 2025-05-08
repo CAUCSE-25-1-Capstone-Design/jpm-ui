@@ -1,6 +1,7 @@
 package jpm.ui.model;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -16,15 +17,11 @@ public class ProcessManager {
     private static final Logger LOGGER = Logger.getLogger(ProcessManager.class.getName());
 
     // 외부 프로세스 실행 경로 (실제 경로로 변경 필요)
-    private static final String NLP_PROCESS_PATH = "python";
+    private final String pythonCommand; // 시스템에 맞는 Python 명령어 ("python" 또는 "python3")
     private static final String NLP_SCRIPT_PATH = "src/main/resources/python/jpm_nlp.py";
 
-    private Process nlpProcess;              // NLP 프로세스
-    private BufferedWriter nlpInputWriter;   // NLP 프로세스 입력 스트림
-    private BufferedReader nlpOutputReader;  // NLP 프로세스 출력 스트림
     private final Consumer<String> outputHandler; // 출력 처리 콜백
     private final ExecutorService executorService; // 비동기 작업 실행기
-    private volatile boolean isRunning;      // 프로세스 실행 상태
 
     /**
      * 프로세스 매니저 생성자
@@ -34,107 +31,101 @@ public class ProcessManager {
     public ProcessManager(Consumer<String> outputHandler) {
         this.outputHandler = outputHandler;
         this.executorService = Executors.newCachedThreadPool();
-        this.isRunning = false;
-    }
-
-    /**
-     * NLP 프로세스 시작
-     * 필요할 때 프로세스를 시작하고 연결을 설정합니다.
-     */
-    private void ensureNlpProcessStarted() {
-        if (nlpProcess != null && nlpProcess.isAlive()) {
-            return; // 이미 실행 중이면 재사용
-        }
-
-        try {
-            LOGGER.info("NLP 프로세스 시작...");
-
-            // NLP 프로세스 시작 (Python 스크립트 실행)
-            ProcessBuilder pb = new ProcessBuilder(NLP_PROCESS_PATH, NLP_SCRIPT_PATH);
-            pb.redirectErrorStream(true); // 표준 오류를 표준 출력으로 리다이렉트
-
-            nlpProcess = pb.start();
-
-            // 입출력 스트림 설정
-            nlpInputWriter = new BufferedWriter(new OutputStreamWriter(nlpProcess.getOutputStream()));
-            nlpOutputReader = new BufferedReader(new InputStreamReader(nlpProcess.getInputStream()));
-
-            isRunning = true;
-
-            // 별도 스레드에서 프로세스 종료 감지
-            executorService.submit(() -> {
-                try {
-                    int exitCode = nlpProcess.waitFor();
-                    LOGGER.info("NLP 프로세스 종료: " + exitCode);
-                    isRunning = false;
-                } catch (InterruptedException e) {
-                    LOGGER.log(Level.WARNING, "NLP 프로세스 감시 중단", e);
-                    Thread.currentThread().interrupt();
-                }
-            });
-
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "NLP 프로세스 시작 실패", e);
-            outputHandler.accept("오류: NLP 프로세스를 시작할 수 없습니다. " + e.getMessage());
-        }
+        this.pythonCommand = detectPythonCommand(); // Python 명령어 자동 감지
     }
 
     /**
      * 사용자 입력을 처리하고 NLP 프로세스에 전달
+     * 명령줄 인자를 통해 입력을 전달합니다.
      *
      * @param input 사용자 입력
      */
     public void processUserInput(String input) {
-        // NLP 프로세스 시작 확인
-        ensureNlpProcessStarted();
-
-        if (!isRunning) {
-            outputHandler.accept("오류: NLP 프로세스가 실행 중이 아닙니다.");
-            return;
-        }
-
-        // 비동기적으로 입력 전송 및 응답 처리
         executorService.submit(() -> {
             try {
-                // 입력을 NLP 프로세스에 전송
-                nlpInputWriter.write(input);
-                nlpInputWriter.newLine();
-                nlpInputWriter.flush();
+                // 새 NLP 프로세스 시작 (매 요청마다 새로운 프로세스)
+                ProcessBuilder pb = new ProcessBuilder(pythonCommand, NLP_SCRIPT_PATH, input);
+                pb.redirectErrorStream(true); // 표준 오류를 표준 출력으로 리다이렉트
 
-                LOGGER.info("사용자 입력 전송: " + input);
+                LOGGER.info("NLP 프로세스 시작: " + pythonCommand + " " + NLP_SCRIPT_PATH + " \"" + input + "\"");
+                Process process = pb.start();
 
-                // 응답 읽기 - 라인 단위로 실시간 처리
-                String line;
-                while ((line = nlpOutputReader.readLine()) != null) {
-                    // 응답 끝 마커 확인 (jpm-nlp에서 정의 필요)
-                    if (line.equals("JPM_RESPONSE_END")) {
-                        break;
+                // 프로세스 출력 읽기
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        // 응답 끝 마커 확인 (jpm-nlp에서 정의 필요)
+                        if (line.equals("JPM_RESPONSE_END")) {
+                            break;
+                        }
+
+                        // 빈 라인 무시
+                        if (!line.trim().isEmpty()) {
+                            final String output = line;
+                            outputHandler.accept(output);
+                        }
                     }
+                }
 
-                    // 빈 라인 무시
-                    if (!line.trim().isEmpty()) {
-                        final String output = line;
-                        outputHandler.accept(output);
-                    }
+                // 프로세스 종료 대기
+                int exitCode = process.waitFor();
+                LOGGER.info("NLP 프로세스 종료 코드: " + exitCode);
+
+                if (exitCode != 0) {
+                    // 비정상 종료 시 오류 메시지
+                    outputHandler.accept("프로세스가 비정상 종료되었습니다 (코드: " + exitCode + ")");
                 }
 
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "프로세스 통신 오류", e);
                 outputHandler.accept("프로세스 통신 중 오류가 발생했습니다: " + e.getMessage());
-
-                // 연결 재설정 시도
-                resetConnection();
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.WARNING, "프로세스 실행 중단", e);
+                Thread.currentThread().interrupt();
+                outputHandler.accept("프로세스 실행이 중단되었습니다.");
             }
         });
     }
 
     /**
-     * 프로세스 연결 재설정
-     * 오류 발생 시 프로세스를 재시작합니다.
+     * 시스템에 맞는 Python 명령어 감지
+     *
+     * @return 감지된 Python 명령어 ("python" 또는 "python3")
      */
-    private void resetConnection() {
-        shutdown();
-        ensureNlpProcessStarted();
+    private String detectPythonCommand() {
+        String python = "";
+        try {
+            // 먼저 'python3' 시도
+            if (testCommand("python3")) {
+                return python = "python3";
+            }
+
+            // 다음으로 'python' 시도
+            if (testCommand("python")) {
+                return python = "python";
+            }
+
+            // 둘 다 실패하면 기본값 반환
+            return python = "python";
+        } finally {
+            LOGGER.info("감지한 Python 명령어: " + python);
+        }
+    }
+
+    /**
+     * 명령어 실행 테스트
+     *
+     * @param command 테스트할 명령어
+     * @return 명령어 실행 성공 여부
+     */
+    private boolean testCommand(String command) {
+        try {
+            Process process = new ProcessBuilder(command, "--version").start();
+            int exitCode = process.waitFor();
+            return exitCode == 0;
+        } catch (IOException | InterruptedException e) {
+            return false;
+        }
     }
 
     /**
@@ -143,45 +134,7 @@ public class ProcessManager {
     public void shutdown() {
         LOGGER.info("프로세스 매니저 종료...");
 
-        isRunning = false;
-
-        // 스트림 닫기
-        try {
-            if (nlpInputWriter != null) {
-                nlpInputWriter.close();
-            }
-            if (nlpOutputReader != null) {
-                nlpOutputReader.close();
-            }
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "스트림 닫기 오류", e);
-        }
-
-        // 프로세스 종료
-        if (nlpProcess != null && nlpProcess.isAlive()) {
-            nlpProcess.destroy();
-            try {
-                // 일정 시간 후에도 종료되지 않으면 강제 종료
-                if (nlpProcess.waitFor() != 0) {
-                    nlpProcess.destroyForcibly();
-                }
-            } catch (InterruptedException e) {
-                LOGGER.log(Level.WARNING, "프로세스 종료 대기 중단", e);
-                Thread.currentThread().interrupt();
-                nlpProcess.destroyForcibly();
-            }
-        }
-
         // 스레드 풀 종료
         executorService.shutdownNow();
-    }
-
-    /**
-     * 프로세스가 실행 중인지 확인
-     *
-     * @return 실행 중이면 true
-     */
-    public boolean isRunning() {
-        return isRunning;
     }
 }
