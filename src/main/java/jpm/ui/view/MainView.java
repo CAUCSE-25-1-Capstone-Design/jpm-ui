@@ -20,9 +20,10 @@ import jpm.ui.model.ProcessManager;
 public class MainView extends BorderPane {
 
     private final ListView<ChatMessage> chatListView;
-    private final TextField inputField;
-    private final Button sendButton;
-    private final ObservableList<ChatMessage> messages;
+    private final TextField inputField; // 메시지 입력 창
+    private final Button sendButton; // 메시지 전송 버튼
+    private final ObservableList<ChatMessage> messages; // 채팅 메시지가 쌓이는 리스트
+    private final ProgressIndicator progressIndicator; // Python 프로세스 실행 중에 보여질 원형 로딩 컴포넌트
     private final ProcessManager processManager;
 
     public MainView() {
@@ -63,9 +64,23 @@ public class MainView extends BorderPane {
         // 전송 버튼 구성
         sendButton = new Button("전송");
         sendButton.setId("send-button");
+        sendButton.setPrefWidth(60);
+        sendButton.setMinWidth(60);
+
+
+        // ProgressIndicator 초기화
+        progressIndicator = new ProgressIndicator();
+        progressIndicator.setMinSize(20, 20);
+        progressIndicator.setMaxSize(20, 20);
+        progressIndicator.setVisible(false);   // 초기에는 숨김. Python 프로세스 실행 시 보여질 예정
+        progressIndicator.setStyle("-fx-progress-color: #000000;");
+
+        // 전송 버튼에 ProgressIndicator 추가하기 위한 StackPane 사용
+        StackPane buttonPane = new StackPane();
+        buttonPane.getChildren().addAll(sendButton, progressIndicator);
 
         // 입력 영역 레이아웃 구성
-        HBox inputBox = new HBox(10, inputField, sendButton);
+        HBox inputBox = new HBox(10, inputField, buttonPane);
         inputBox.setPadding(new Insets(10, 0, 0, 0));
         inputBox.setAlignment(Pos.CENTER);
         inputBox.setStyle("-fx-background-color: transparent;");
@@ -75,7 +90,10 @@ public class MainView extends BorderPane {
         setBottom(inputBox);
 
         // 프로세스 매니저 초기화 - 응답 처리 콜백 등록
-        processManager = new ProcessManager(this::handleJpmResponse);
+        processManager = new ProcessManager(
+                this::handleJpmResponse,
+                exitCode -> setProcessingState(false)
+        );
 
         // 이벤트 핸들러 등록
         setupEventHandlers();
@@ -114,9 +132,25 @@ public class MainView extends BorderPane {
             addUserMessage(input);
             inputField.clear();
 
+            // 진행 상태 표시
+            setProcessingState(true);
+
             // 프로세스에 입력 전달
             processManager.processUserInput(input);
         }
+    }
+
+    /**
+     * 진행 상태 표시 여부 설정
+     * */
+    private void setProcessingState(boolean isProcessing) {
+        Platform.runLater(() -> {
+            progressIndicator.setVisible(isProcessing);
+            if (isProcessing) {
+                progressIndicator.toFront();
+            }
+            sendButton.setText(isProcessing ? "" : "전송");
+        });
     }
 
     /**
