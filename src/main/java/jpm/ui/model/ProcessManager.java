@@ -18,9 +18,11 @@ public class ProcessManager {
 
     // 외부 프로세스 실행 경로 (실제 경로로 변경 필요)
     private final String pythonCommand; // 시스템에 맞는 Python 명령어 ("python" 또는 "python3")
-    private static final String NLP_SCRIPT_PATH = "src/main/resources/python/jpm_nlp.py";
+    private static final String NLP_SCRIPT_PATH = "src/main/resources/python/gpt-toolCall.py";
+//    private static final String NLP_SCRIPT_PATH = "src/main/resources/python/nlp_mockup.py";
 
     private final Consumer<String> outputHandler; // 출력 처리 콜백
+    private final Consumer<Integer> processCompletionCallback; // 프로세스 종료 후 콜백
     private final ExecutorService executorService; // 비동기 작업 실행기
 
     /**
@@ -28,8 +30,9 @@ public class ProcessManager {
      *
      * @param outputHandler 프로세스 출력 처리 콜백
      */
-    public ProcessManager(Consumer<String> outputHandler) {
+    public ProcessManager(Consumer<String> outputHandler, Consumer<Integer> processCompletionCallback) {
         this.outputHandler = outputHandler;
+        this.processCompletionCallback = processCompletionCallback;
         this.executorService = Executors.newCachedThreadPool();
         this.pythonCommand = detectPythonCommand(); // Python 명령어 자동 감지
     }
@@ -42,6 +45,7 @@ public class ProcessManager {
      */
     public void processUserInput(String input) {
         executorService.submit(() -> {
+            Integer exitCode = null;
             try {
                 // 새 NLP 프로세스 시작 (매 요청마다 새로운 프로세스)
                 ProcessBuilder pb = new ProcessBuilder(pythonCommand, NLP_SCRIPT_PATH, input);
@@ -54,11 +58,6 @@ public class ProcessManager {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        // 응답 끝 마커 확인 (jpm-nlp에서 정의 필요)
-                        if (line.equals("JPM_RESPONSE_END")) {
-                            break;
-                        }
-
                         // 빈 라인 무시
                         if (!line.trim().isEmpty()) {
                             final String output = line;
@@ -68,7 +67,7 @@ public class ProcessManager {
                 }
 
                 // 프로세스 종료 대기
-                int exitCode = process.waitFor();
+                exitCode = process.waitFor();
                 LOGGER.info("NLP 프로세스 종료 코드: " + exitCode);
 
                 if (exitCode != 0) {
@@ -79,10 +78,17 @@ public class ProcessManager {
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "프로세스 통신 오류", e);
                 outputHandler.accept("프로세스 통신 중 오류가 발생했습니다: " + e.getMessage());
+                exitCode = -1; // IO 예외 발생 시 오류코드 (임의)
             } catch (InterruptedException e) {
                 LOGGER.log(Level.WARNING, "프로세스 실행 중단", e);
                 Thread.currentThread().interrupt();
                 outputHandler.accept("프로세스 실행이 중단되었습니다.");
+                exitCode = -2; // 인터럽트 시 오류코드 (임의)
+            } finally {
+                // 프로세스 종료 콜백 호출
+                if(processCompletionCallback != null && exitCode != null) {
+                    processCompletionCallback.accept(exitCode);
+                }
             }
         });
     }
