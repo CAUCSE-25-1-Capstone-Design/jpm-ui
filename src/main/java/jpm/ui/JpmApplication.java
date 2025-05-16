@@ -12,6 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import jpm.ui.view.MainView;
@@ -58,6 +59,9 @@ public class JpmApplication extends Application {
             // 반투명한 검은색 배경의 씬 생성
             Scene scene = new Scene(root);
             scene.setFill(Color.rgb(0, 0, 0, 0.7)); // 70% 투명도의 검은색
+
+            // 폰트 적용
+            Font.loadFont(getClass().getClassLoader().getResource("fonts/Pretendard-Regular.otf").toString(), 16);
 
             // 스타일시트 적용
             scene.getStylesheets().add(getClass().getClassLoader().getResource("css/styles.css").toExternalForm());

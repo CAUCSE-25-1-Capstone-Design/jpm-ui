@@ -1,6 +1,6 @@
 /* 전체 UI 스타일 */
 .root {
-    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-family: "Pretendard", "Segoe UI", Arial, sans-serif;
     -fx-font-size: 14px;
     -fx-background-color: transparent;
 }
@@ -30,12 +30,12 @@
 
 /* 사용자 메시지 말풍선 */
 .user-bubble {
-    -fx-background-color: #4a86e8;
+    -fx-background-color: #F0F0F0;
     -fx-background-radius: 5px 0px 5px 5px;
 }
 
 .user-text {
-    -fx-fill: white;
+    -fx-fill: #333333;
     -fx-font-size: 14px;
 }
 
