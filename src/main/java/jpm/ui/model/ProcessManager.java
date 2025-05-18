@@ -1,5 +1,8 @@
 package jpm.ui.model;
 
+import jpm.ui.constants.DevelopmentLevel;
+import jpm.ui.constants.JpmConstants;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
@@ -14,16 +17,23 @@ import java.util.logging.Logger;
  */
 public class ProcessManager {
 
-    private static final Logger LOGGER = Logger.getLogger(ProcessManager.class.getName());
-
     // 외부 프로세스 실행 경로 (실제 경로로 변경 필요)
     private final String pythonCommand; // 시스템에 맞는 Python 명령어 ("python" 또는 "python3")
-    private static final String NLP_SCRIPT_PATH = "src/main/resources/python/gpt-toolCall.py";
-//    private static final String NLP_SCRIPT_PATH = "src/main/resources/python/nlp_mockup.py";
+    private static final String NLP_SCRIPT_PATH = JpmConstants.JPM_NLP_PATH;
 
     private final Consumer<String> outputHandler; // 출력 처리 콜백
     private final Consumer<Integer> processCompletionCallback; // 프로세스 종료 후 콜백
     private final ExecutorService executorService; // 비동기 작업 실행기
+
+    private static final Logger LOGGER = Logger.getLogger(ProcessManager.class.getName());
+    // Logger 레벨 초기화
+    static {
+        if (JpmConstants.DEVELOPMENT_LEVEL == DevelopmentLevel.DEBUG) {
+            LOGGER.setLevel(Level.ALL); // 디버그 모드에서는 모든 로그 출력
+        } else {
+            LOGGER.setLevel(Level.OFF); // 릴리즈 모드에서는 출력 X
+        }
+    }
 
     /**
      * 프로세스 매니저 생성자
