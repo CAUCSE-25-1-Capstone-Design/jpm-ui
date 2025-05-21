@@ -47,3 +47,5 @@ key.yaml
 log.txt
 tools.py
 utils.py
+jpm_core/
+__pycache__/
