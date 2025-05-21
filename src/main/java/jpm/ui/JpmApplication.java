@@ -8,11 +8,13 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import jpm.ui.view.MainView;
@@ -34,71 +36,93 @@ public class JpmApplication extends Application {
     public void start(Stage primaryStage) {
         try {
             // 화면 크기 계산
-            Rectangle2D screenBounds = javafx.stage.Screen.getPrimary().getVisualBounds();
-            windowWidth = screenBounds.getWidth() * 0.7;   // 화면 너비의 70%
-            windowHeight = screenBounds.getHeight() * 0.5; // 화면 높이의 50%
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            windowWidth = screenBounds.getWidth() * 0.5;
+            windowHeight = screenBounds.getHeight() * 0.7;
 
-            // 투명한 배경의 루트 컨테이너 생성
-            StackPane root = new StackPane();
-            root.setPadding(new Insets(10));
+            // 외부 컨테이너 생성 (투명 배경 + 그림자용)
+            StackPane shadowContainer = new StackPane();
+            shadowContainer.setPadding(new Insets(15)); // 그림자를 위한 여백 확보
+            shadowContainer.setStyle("-fx-background-color: transparent;"); // 완전 투명 배경
 
-            // 메인 뷰 생성 및 설정
+            // 중간 컨테이너 생성 (그림자 효과가 적용될 투명 레이어)
+            StackPane effectContainer = new StackPane();
+            effectContainer.setStyle("-fx-background-color: transparent;"); // 투명 배경
+            effectContainer.setMaxWidth(windowWidth - 30); // 여백 고려한 크기
+            effectContainer.setMaxHeight(windowHeight - 30);
+
+            // 그림자 효과 생성
+            DropShadow dropShadow = new DropShadow();
+            dropShadow.setRadius(15);
+            dropShadow.setOffsetX(0);
+            dropShadow.setOffsetY(0);
+            dropShadow.setSpread(0.4); // 그림자 확산
+            dropShadow.setColor(Color.rgb(0, 0, 0, 0.55));
+
+            // 중간 컨테이너에 그림자 적용
+            effectContainer.setEffect(dropShadow);
+
+            // 내부 컨테이너 생성 (실제 UI 콘텐츠용)
+            StackPane contentContainer = new StackPane();
+            contentContainer.setPadding(new Insets(10));
+            contentContainer.setStyle("-fx-background-color: rgba(242, 242, 247, 0.9);"
+                    + "-fx-background-radius: 20;");
+
+            // 메인 뷰 생성
             MainView mainView = new MainView();
 
-            // 윈도우 컨트롤 생성 (닫기, 최소화, 최대화 버튼)
+            // 윈도우 컨트롤
             HBox windowControls = createWindowControls(primaryStage);
-            windowControls.setPickOnBounds(false); // 영역 크기만큼 이벤트 감지 방지
+            windowControls.setPickOnBounds(false);
 
-            // 윈도우 컨트롤 위치 조정 (오른쪽 상단에 고정)
-//            StackPane.setMargin(windowControls, new Insets(10, 10, 0, 0));
-//            StackPane.setAlignment(windowControls, javafx.geometry.Pos.TOP_RIGHT);
+            // 컴포넌트 추가
+            contentContainer.getChildren().addAll(mainView, windowControls);
+            effectContainer.getChildren().add(contentContainer);
+            shadowContainer.getChildren().add(effectContainer);
 
-            // 루트에 컴포넌트 추가
-            root.getChildren().addAll(mainView, windowControls);
-
-            // 반투명한 검은색 배경의 씬 생성
-            Scene scene = new Scene(root);
-            scene.setFill(Color.rgb(0, 0, 0, 0.7)); // 70% 투명도의 검은색
+            // Scene 생성 - 그림자 컨테이너를 루트로 사용
+            Scene scene = new Scene(shadowContainer, windowWidth, windowHeight);
+            scene.setFill(Color.TRANSPARENT);  // 완전 투명 배경
 
             // 폰트 적용
             Font.loadFont(getClass().getClassLoader().getResource("fonts/Pretendard-Regular.otf").toString(), 16);
 
-            // 스타일시트 적용
+            // CSS 적용
             scene.getStylesheets().add(getClass().getClassLoader().getResource("css/styles.css").toExternalForm());
 
-            // 투명한 스타일의 스테이지 설정
-            primaryStage.initStyle(StageStyle.TRANSPARENT);
-            primaryStage.setFullScreen(true);
-            primaryStage.setFullScreenExitHint(""); // 전체화면 힌트 제거
+            // Stage 설정
+            primaryStage.initStyle(StageStyle.TRANSPARENT);  // 테두리 제거
             primaryStage.setScene(scene);
+            primaryStage.centerOnScreen();
+            primaryStage.setResizable(false);
 
-            // ESC 키로 전체화면 해제 시 크기 조정 이벤트 처리
-            primaryStage.fullScreenProperty().addListener((observable, oldValue, newValue) -> {
-                if (oldValue && !newValue) {  // 전체화면에서 일반 화면으로 전환 시
+            // 전체화면 진입 후 ESC로 빠져나오면 창 크기 조정
+            primaryStage.fullScreenProperty().addListener((obs, wasFullScreen, isFullScreen) -> {
+                if (wasFullScreen && !isFullScreen) {
                     primaryStage.setWidth(windowWidth);
                     primaryStage.setHeight(windowHeight);
-                    primaryStage.centerOnScreen(); // 화면 중앙에 배치
+                    primaryStage.centerOnScreen();
                 }
             });
 
-            // 윈도우 드래그 기능 구현
-            implementWindowDrag(root, primaryStage);
+            // 드래그로 창 이동 - contentContainer에 적용
+            implementWindowDrag(contentContainer, primaryStage);
 
-            // 종료 시 모든 프로세스 정리
+            // 닫기 이벤트 처리
             primaryStage.setOnCloseRequest(e -> {
                 mainView.shutdown();
                 Platform.exit();
             });
 
+            // 실행
             primaryStage.show();
-
-            // 시작 시 입력 필드에 포커스
             mainView.focusInputField();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     /**
      * 윈도우 컨트롤 버튼 (닫기, 최소화, 최대화) 생성
