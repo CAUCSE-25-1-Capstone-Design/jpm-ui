@@ -37,12 +37,14 @@ public class JpmApplication extends Application {
         try {
             // 화면 크기 계산
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+
             windowWidth = screenBounds.getWidth() * 0.5;
             windowHeight = screenBounds.getHeight() * 0.7;
 
             // 외부 컨테이너 생성 (투명 배경 + 그림자용)
             StackPane shadowContainer = new StackPane();
             shadowContainer.setPadding(new Insets(20)); // 그림자를 위한 여백 확보
+
             shadowContainer.setStyle("-fx-background-color: transparent;"); // 완전 투명 배경
 
             // 중간 컨테이너 생성 (그림자 효과가 적용될 투명 레이어)
@@ -52,7 +54,7 @@ public class JpmApplication extends Application {
             effectContainer.setMaxHeight(windowHeight - 30);
 
             // 그림자 효과 생성
-            // 그림자 효과 생성
+
             DropShadow dropShadow = new DropShadow();
             dropShadow.setRadius(15);
             dropShadow.setOffsetX(0);  // 수평 오프셋 (0 = 중앙)

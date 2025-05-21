@@ -17,7 +17,8 @@ public class ChatMessage {
     public enum MessageType {
         USER,
         JPM,
-        SYSTEM
+        SYSTEM,
+        TYPING   // 타이핑 인디케이터
     }
 
     private final String content;        // 메시지 내용
