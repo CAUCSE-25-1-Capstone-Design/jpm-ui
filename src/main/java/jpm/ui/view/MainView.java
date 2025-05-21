@@ -145,11 +145,21 @@ public class MainView extends BorderPane {
      * */
     private void setProcessingState(boolean isProcessing) {
         Platform.runLater(() -> {
+            // 진행 상태에 따라 입력 필드와 전송 버튼 활성화/비활성화
+            inputField.setDisable(isProcessing);
+            sendButton.setDisable(isProcessing);
+
+            // 진행 상태에 따라 프로그레스 인디케이터 표시/숨김
             progressIndicator.setVisible(isProcessing);
             if (isProcessing) {
                 progressIndicator.toFront();
             }
             sendButton.setText(isProcessing ? "" : "전송");
+
+            // 처리가 완료되면 입력 필드에 포커스 설정
+            if (!isProcessing) {
+                inputField.requestFocus();
+            }
         });
     }
 

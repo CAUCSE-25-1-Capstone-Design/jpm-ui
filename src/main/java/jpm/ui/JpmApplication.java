@@ -37,8 +37,8 @@ public class JpmApplication extends Application {
         try {
             // 화면 크기 계산
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-            windowWidth = screenBounds.getWidth() * 0.7;
-            windowHeight = screenBounds.getHeight() * 0.5;
+            windowWidth = screenBounds.getWidth() * 0.5;
+            windowHeight = screenBounds.getHeight() * 0.7;
 
             // 외부 컨테이너 생성 (투명 배경 + 그림자용)
             StackPane shadowContainer = new StackPane();
@@ -56,8 +56,8 @@ public class JpmApplication extends Application {
             dropShadow.setRadius(15);
             dropShadow.setOffsetX(0);
             dropShadow.setOffsetY(0);
-            dropShadow.setSpread(0.2); // 그림자 확산
-            dropShadow.setColor(Color.rgb(0, 0, 0, 0.8));
+            dropShadow.setSpread(0.4); // 그림자 확산
+            dropShadow.setColor(Color.rgb(0, 0, 0, 0.55));
 
             // 중간 컨테이너에 그림자 적용
             effectContainer.setEffect(dropShadow);

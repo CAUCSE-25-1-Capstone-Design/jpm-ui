@@ -62,7 +62,7 @@
 }
 
 #input-field:focused {
-    -fx-background-color: rgba(220, 220, 230, 1.0);
+    -fx-background-color: rgba(242, 242, 247, 0.9);
 }
 
 /* 전송 버튼 스타일 */
