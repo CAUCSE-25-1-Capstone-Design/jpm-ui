@@ -71,7 +71,12 @@ public class ProcessManager {
                         // 빈 라인 무시
                         if (!line.trim().isEmpty()) {
                             final String output = line;
-                            outputHandler.accept(output);
+                            String[] splitted=output.split(";");
+                            if(splitted[0].equals("PROGRESS")) {
+
+
+                            }
+                            else outputHandler.accept(output);
                         }
                     }
                 }
