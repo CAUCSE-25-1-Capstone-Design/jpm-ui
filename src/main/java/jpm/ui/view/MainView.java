@@ -147,14 +147,14 @@ public class MainView extends BorderPane {
     /**
      * 진행 상태 표시 여부 설정
      * */
-    private void setProcessingState(boolean isProcessing) {
-        Platform.runLater(() -> {
-            progressIndicator.setVisible(isProcessing);
-            if (isProcessing) {
-                progressIndicator.toFront();
-            }
-            sendButton.setText(isProcessing ? "" : "전송");
-        });
+//    private void setProcessingState(boolean isProcessing) {
+//        Platform.runLater(() -> {
+//            progressIndicator.setVisible(isProcessing);
+//            if (isProcessing) {
+//                progressIndicator.toFront();
+//            }
+//            sendButton.setText(isProcessing ? "" : "전송");
+//        });
 //      * 메시지 전송 처리
 //      */
 //     private void sendMessage() {
@@ -170,7 +170,7 @@ public class MainView extends BorderPane {
 //             // 프로세스에 입력 전달
 //             processManager.processUserInput(input);
 //         }
-    }
+//    }
 
     /**
      * 진행 상태 표시 여부 설정
