@@ -2,12 +2,12 @@
 .root {
     -fx-font-family: "Pretendard", "Segoe UI", Arial, sans-serif;
     -fx-font-size: 14px;
-    -fx-background-color: #F2F2F7;
+    -fx-background-color: rgba(242, 242, 247, 0.8); /* 반투명 배경 적용 */
 }
 
 /* 메인 뷰 스타일 */
 #main-view {
-    -fx-background-color: #F2F2F7;
+    -fx-background-color: rgba(242, 242, 247, 0.7); /* 반투명 배경 적용 */
 }
 
 /* 채팅 목록 스타일 */
@@ -30,7 +30,7 @@
 
 /* 사용자 메시지 말풍선 */
 .user-bubble {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: rgba(255, 255, 255, 0.9); /* 약간 반투명한 흰색 */
     -fx-background-radius: 5px 0px 5px 5px;
 }
 
@@ -54,7 +54,7 @@
 
 /* 입력 필드 스타일 */
 #input-field {
-    -fx-background-color: rgba(242, 242, 247, 0.9);
+    -fx-background-color: rgba(242, 242, 247, 0.85); /* 반투명 배경 적용 */
     -fx-text-fill: #1C1C1E;
     -fx-background-radius: 5px;
     -fx-padding: 8px 15px;
@@ -62,12 +62,18 @@
 }
 
 #input-field:focused {
-    -fx-background-color: rgba(220, 220, 230, 1.0);
+    -fx-background-color: rgba(242, 242, 247, 0.85); /* 포커스 상태에서도 동일한 반투명 배경 유지 */
+}
+
+/* 비활성화된 입력 필드 스타일 */
+#input-field:disabled {
+    -fx-opacity: 0.7;
+    -fx-background-color: rgba(230, 230, 235, 0.85);
 }
 
 /* 전송 버튼 스타일 */
 #send-button {
-    -fx-background-color: #D1D1D6;
+    -fx-background-color: rgba(209, 209, 214, 0.9); /* 반투명 배경 적용 */
     -fx-text-fill: #1C1C1E;
     -fx-background-radius: 5px;
     -fx-padding: 8px 15px;
@@ -75,7 +81,13 @@
 }
 
 #send-button:hover {
-    -fx-background-color: #C7C7CC;
+    -fx-background-color: rgba(199, 199, 204, 0.9); /* 반투명 배경 적용 */
+}
+
+/* 비활성화된 전송 버튼 스타일 */
+#send-button:disabled {
+    -fx-opacity: 0.7;
+    -fx-background-color: rgba(209, 209, 214, 0.7);
 }
 
 /* 스크롤바 스타일 */
@@ -84,7 +96,7 @@
 }
 
 .scroll-bar .thumb {
-    -fx-background-color: #D1D1D6;
+    -fx-background-color: rgba(209, 209, 214, 0.7); /* 반투명 스크롤바 */
     -fx-background-radius: 5px;
 }
 

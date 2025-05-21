@@ -116,6 +116,7 @@ public class MainView extends BorderPane {
         // 애니메이션 설정 메서드 호출 추가
         setupAnimation();
 
+
         // 이벤트 핸들러 등록
         setupEventHandlers();
 
@@ -153,6 +154,44 @@ public class MainView extends BorderPane {
                 progressIndicator.toFront();
             }
             sendButton.setText(isProcessing ? "" : "전송");
+        });
+//      * 메시지 전송 처리
+//      */
+//     private void sendMessage() {
+//         String input = inputField.getText().trim();
+//         if (!input.isEmpty()) {
+//             // 사용자 메시지 추가
+//             addUserMessage(input);
+//             inputField.clear();
+
+//             // 진행 상태 표시
+//             setProcessingState(true);
+
+//             // 프로세스에 입력 전달
+//             processManager.processUserInput(input);
+//         }
+    }
+
+    /**
+     * 진행 상태 표시 여부 설정
+     * */
+    private void setProcessingState(boolean isProcessing) {
+        Platform.runLater(() -> {
+            // 진행 상태에 따라 입력 필드와 전송 버튼 활성화/비활성화
+            inputField.setDisable(isProcessing);
+            sendButton.setDisable(isProcessing);
+
+            // 진행 상태에 따라 프로그레스 인디케이터 표시/숨김
+            progressIndicator.setVisible(isProcessing);
+            if (isProcessing) {
+                progressIndicator.toFront();
+            }
+            sendButton.setText(isProcessing ? "" : "전송");
+
+            // 처리가 완료되면 입력 필드에 포커스 설정
+            if (!isProcessing) {
+                inputField.requestFocus();
+            }
         });
     }
 

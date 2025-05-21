@@ -40,3 +40,10 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+config.yaml
+gpt-toolCall.py
+key.yaml
+log.txt
+tools.py
+utils.py
