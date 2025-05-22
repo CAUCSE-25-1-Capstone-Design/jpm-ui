@@ -608,15 +608,15 @@ public class MainView extends BorderPane {
                     String method = command[2];
                     switch (method) {
                         case "init":
-                            setTypingIndicatorText("jpm 프로젝트 중");
+                            setTypingIndicatorText("jpm 프로젝트 초기화 중");
                             showTypingIndicator();
                             break;
                         case "install":
-                            setTypingIndicatorText("설치 중");
+                            setTypingIndicatorText("설치 중: " + command[3]);
                             showTypingIndicator();
                             break;
                         case "update":
-                            setTypingIndicatorText("업데이트 중");
+                            setTypingIndicatorText("업데이트 중: " + command[3]);
                             showTypingIndicator();
                             break;
                         case "list":
@@ -624,7 +624,7 @@ public class MainView extends BorderPane {
                             showTypingIndicator();
                             break;
                         case "delete":
-                            setTypingIndicatorText("삭제 중");
+                            setTypingIndicatorText("삭제 중: " + command[3]);
                             showTypingIndicator();
                             break;
                         case "build":
@@ -669,8 +669,8 @@ public class MainView extends BorderPane {
                 }
             }
             else {
-                // 종료 코드도 따로 넣어줘야 함
-                messages.add(new ChatMessage(response, ChatMessage.MessageType.JPM));
+                if(command[0].equals("OUTPUT") && command[1].equals("END")) hideTypingIndicator();
+                else messages.add(new ChatMessage(response, ChatMessage.MessageType.JPM));
             }
             setProcessingState(false);
         });
