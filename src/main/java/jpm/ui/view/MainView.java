@@ -555,10 +555,10 @@ public class MainView extends BorderPane {
                 }
             }
             else {
-                if(command[0].equals("OUTPUT") && command[1].equals("END")) hideTypingIndicator();
+                if(command[0].equals("OUTPUT") && command[1].equals("START")) hideTypingIndicator();
+                else if(command[0].equals("OUTPUT") && command[1].equals("END")) setProcessingState(false);
                 else messages.add(new ChatMessage(response, ChatMessage.MessageType.JPM));
             }
-            setProcessingState(false);
         });
     }
 }
