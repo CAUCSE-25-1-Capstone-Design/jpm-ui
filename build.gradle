@@ -8,7 +8,6 @@ plugins {
 }
 
 group 'org.jpm'
-version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -62,4 +61,5 @@ java {
         languageVersion = JavaLanguageVersion.of(21)
     }
 }
+
 
