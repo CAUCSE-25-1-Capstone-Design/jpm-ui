@@ -24,7 +24,7 @@
 
 /* 사용자 메시지 말풍선 */
 .message-bubble {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: rgba(255, 255, 255, 0.9);
     -fx-background-radius: 0px 5px 5px 5px;
 }
 
@@ -43,6 +43,13 @@
 .jpm-text {
     -fx-fill: #1C1C1E;
     -fx-font-size: 14px;
+}
+
+/* 타이핑 텍스트 스타일 */
+.typing-text {
+    -fx-text-fill: #1C1C1E;
+    -fx-font-size: 14px;
+    -fx-font-family: "Pretendard", "Segoe UI", Arial, sans-serif;
 }
 
 /* 시스템 메시지 스타일 */

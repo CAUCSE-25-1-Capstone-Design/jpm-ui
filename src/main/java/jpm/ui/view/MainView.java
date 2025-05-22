@@ -45,7 +45,7 @@ public class MainView extends BorderPane {
     ImageView icon = new ImageView(new Image(getClass().getResourceAsStream("/image/up-arrow3.png")));
 
     // 클래스 필드로 추가
-    private Label typingStatusText;
+    private Text typingStatusText;
 
     public MainView() {
         // 기본 스타일 및 패딩 설정
@@ -272,7 +272,7 @@ public class MainView extends BorderPane {
                         // 텍스트 설정
                         Text jpmText = new Text(message.getContent());
                         jpmText.setWrappingWidth(600); // 긴 텍스트를 위한 충분한 너비
-                        jpmText.getStyleClass().add("jpm-text");
+                        jpmText.getStyleClass().add("typing-text");
 
                         container.getChildren().add(jpmText);
                         break;
@@ -319,119 +319,6 @@ public class MainView extends BorderPane {
         }
     }
 
-//    /**
-//     * 타이핑 인디케이터 생성 메서드
-//     */
-//    private void createTypingIndicator() {
-//        // 타이핑 인디케이터 컨테이너
-//        typingIndicator = new HBox(8);
-//        typingIndicator.setPadding(new Insets(5, 10, 5, 10));
-//        typingIndicator.setAlignment(Pos.CENTER_LEFT);
-//
-//        // 말풍선 배경
-//        StackPane bubbleContainer = new StackPane();
-//        bubbleContainer.getStyleClass().add("message-bubble");
-//        bubbleContainer.getStyleClass().add("jpm-bubble"); // JPM 스타일 적용
-//        bubbleContainer.setPadding(new Insets(7.5, 12.5, 7.5, 12.5));
-//
-//        // 3개의 점 생성
-//        dots = new ArrayList<>();
-//        HBox dotsContainer = new HBox(8);
-//
-//        for (int i = 0; i < 3; i++) {
-//            Circle dot = new Circle(4);
-//            // 모든 점의 중심을 동일하게 설정하여 애니메이션 중에도 정렬이 유지되도록 함
-//            dot.setCenterX(0);
-//            dot.setCenterY(0);
-//            dot.setFill(i == 0 ? Color.GRAY : Color.LIGHTGRAY);
-//
-//            // 각 점을 StackPane으로 감싸서 애니메이션 중에도 레이아웃이 안정적으로 유지되도록 함
-//            StackPane dotWrapper = new StackPane(dot);
-//            dotWrapper.setMinSize(10, 10);  // 최소 크기 설정
-//            dotWrapper.setPrefSize(10, 10);  // 선호 크기 설정
-//
-//            dots.add(dot);
-//            dotsContainer.getChildren().add(dotWrapper);
-//        }
-//
-//        bubbleContainer.getChildren().add(dotsContainer);
-//
-//        HBox bubble = new HBox();
-//        bubble.getChildren().addAll(bubbleContainer);
-//        bubble.setAlignment(Pos.CENTER_LEFT);
-//
-//        typingIndicator.getChildren().add(bubble);
-//
-//        // 처음에는 보이지 않게 설정
-//        typingIndicator.setVisible(false);
-//        typingIndicator.setManaged(false);
-//    }
-//    /**
-//     * 타이핑 인디케이터 생성 메서드
-//     */
-//    private void createTypingIndicator() {
-//        // 타이핑 인디케이터 컨테이너
-//        typingIndicator = new HBox(8);
-//        typingIndicator.setPadding(new Insets(5, 10, 5, 10));
-//        typingIndicator.setAlignment(Pos.CENTER_LEFT);
-//
-//        // 말풍선 배경
-//        StackPane bubbleContainer = new StackPane();
-//        bubbleContainer.getStyleClass().add("message-bubble");
-//        bubbleContainer.getStyleClass().add("jpm-bubble"); // JPM 스타일 적용
-//        bubbleContainer.setPadding(new Insets(7.5, 12.5, 7.5, 12.5));
-//
-//        // 말풍선 꼬리 부분 (필요한 경우)
-//        Polygon tail = new Polygon();
-//        tail.getPoints().addAll(0.0, 0.0, 10.0, 10.0, 10.0, 0.0);
-//        tail.setFill(Color.WHITE);
-//
-//        // 말풍선 내용을 담을 HBox
-//        HBox contentBox = new HBox(10); // 텍스트와 점 사이 간격 10
-//        contentBox.setAlignment(Pos.CENTER_LEFT);
-//
-//        // "~~ 하는중" 텍스트 추가
-//        Label statusText = new Label("응답 생성 중");
-//        statusText.getStyleClass().add("typing-text");
-//        contentBox.getChildren().add(statusText);
-//
-//        // 3개의 점 생성
-//        dots = new ArrayList<>();
-//        HBox dotsContainer = new HBox(8);
-//
-//        for (int i = 0; i < 3; i++) {
-//            Circle dot = new Circle(4);
-//            // 모든 점의 중심을 동일하게 설정하여 애니메이션 중에도 정렬이 유지되도록 함
-//            dot.setCenterX(0);
-//            dot.setCenterY(0);
-//            dot.setFill(i == 0 ? Color.GRAY : Color.LIGHTGRAY);
-//
-//            // 각 점을 StackPane으로 감싸서 애니메이션 중에도 레이아웃이 안정적으로 유지되도록 함
-//            StackPane dotWrapper = new StackPane(dot);
-//            dotWrapper.setMinSize(10, 10);  // 최소 크기 설정
-//            dotWrapper.setPrefSize(10, 10);  // 선호 크기 설정
-//
-//            dots.add(dot);
-//            dotsContainer.getChildren().add(dotWrapper);
-//        }
-//
-//        // 텍스트와 점 컨테이너를 contentBox에 추가
-//        contentBox.getChildren().add(dotsContainer);
-//
-//        // contentBox를 말풍선 컨테이너에 추가
-//        bubbleContainer.getChildren().add(contentBox);
-//
-//        // 타이핑 인디케이터에 말풍선과 꼬리 추가
-//        HBox bubbleWithTail = new HBox();
-//        bubbleWithTail.getChildren().addAll(tail, bubbleContainer);
-//        bubbleWithTail.setAlignment(Pos.CENTER_LEFT);
-//
-//        typingIndicator.getChildren().add(bubbleWithTail);
-//
-//        // 처음에는 보이지 않게 설정
-//        typingIndicator.setVisible(false);
-//        typingIndicator.setManaged(false);
-//    }
     /**
      * 타이핑 인디케이터 생성 메서드
      */
@@ -444,7 +331,6 @@ public class MainView extends BorderPane {
         // 말풍선 배경
         StackPane bubbleContainer = new StackPane();
         bubbleContainer.getStyleClass().add("message-bubble");
-        bubbleContainer.getStyleClass().add("jpm-bubble"); // JPM 스타일 적용
         bubbleContainer.setPadding(new Insets(7.5, 12.5, 7.5, 12.5));
 
         // 말풍선 내용을 담을 HBox
@@ -452,7 +338,7 @@ public class MainView extends BorderPane {
         contentBox.setAlignment(Pos.CENTER_LEFT);
 
         // "~~ 하는중" 텍스트 추가
-        typingStatusText = new Label("응답 준비 중");
+        typingStatusText = new Text("응답 준비 중");
         typingStatusText.getStyleClass().add("typing-text");
         contentBox.getChildren().add(typingStatusText);
 
@@ -663,7 +549,7 @@ public class MainView extends BorderPane {
                 }
                 else if(command[1].equals("GPT")) {
                     if(command[2].equals("generate")) {
-                        setTypingIndicatorText("GPT 응답 생성 중");
+                        setTypingIndicatorText("응답 생성 중");
                         showTypingIndicator();
                     }
                 }
