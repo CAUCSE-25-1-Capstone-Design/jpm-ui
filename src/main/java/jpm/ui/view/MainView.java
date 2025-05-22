@@ -6,8 +6,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -42,7 +40,9 @@ public class MainView extends BorderPane {
     private int activeDotIndex = 0;
     private Timeline animation;
     private boolean isTyping = false;
-    ImageView icon = new ImageView(new Image(getClass().getResourceAsStream("/image/up-arrow3.png")));
+
+    // 클래스 필드로 추가
+    private Label typingStatusText;
 
     public MainView() {
         // 기본 스타일 및 패딩 설정
@@ -80,18 +80,10 @@ public class MainView extends BorderPane {
         HBox.setHgrow(inputField, Priority.ALWAYS);
 
         // 전송 버튼 구성
-
-        icon.setFitWidth(25);
-        icon.setFitHeight(25);
-
-        sendButton = new Button();
+        sendButton = new Button("전송");
         sendButton.setId("send-button");
-        sendButton.setGraphic(icon);
-        sendButton.setPrefSize(35, 35);
-        sendButton.setMaxSize(35, 35);
-        sendButton.setMinSize(35, 35);
-
-
+        sendButton.setPrefWidth(60);
+        sendButton.setMinWidth(60);
 
 
         // ProgressIndicator 초기화
@@ -197,7 +189,7 @@ public class MainView extends BorderPane {
             if (isProcessing) {
                 progressIndicator.toFront();
             }
-            sendButton.setGraphic(isProcessing ? null : icon);
+            sendButton.setText(isProcessing ? "" : "전송");
 
             // 처리가 완료되면 입력 필드에 포커스 설정
             if (!isProcessing) {
@@ -318,6 +310,119 @@ public class MainView extends BorderPane {
         }
     }
 
+//    /**
+//     * 타이핑 인디케이터 생성 메서드
+//     */
+//    private void createTypingIndicator() {
+//        // 타이핑 인디케이터 컨테이너
+//        typingIndicator = new HBox(8);
+//        typingIndicator.setPadding(new Insets(5, 10, 5, 10));
+//        typingIndicator.setAlignment(Pos.CENTER_LEFT);
+//
+//        // 말풍선 배경
+//        StackPane bubbleContainer = new StackPane();
+//        bubbleContainer.getStyleClass().add("message-bubble");
+//        bubbleContainer.getStyleClass().add("jpm-bubble"); // JPM 스타일 적용
+//        bubbleContainer.setPadding(new Insets(7.5, 12.5, 7.5, 12.5));
+//
+//        // 3개의 점 생성
+//        dots = new ArrayList<>();
+//        HBox dotsContainer = new HBox(8);
+//
+//        for (int i = 0; i < 3; i++) {
+//            Circle dot = new Circle(4);
+//            // 모든 점의 중심을 동일하게 설정하여 애니메이션 중에도 정렬이 유지되도록 함
+//            dot.setCenterX(0);
+//            dot.setCenterY(0);
+//            dot.setFill(i == 0 ? Color.GRAY : Color.LIGHTGRAY);
+//
+//            // 각 점을 StackPane으로 감싸서 애니메이션 중에도 레이아웃이 안정적으로 유지되도록 함
+//            StackPane dotWrapper = new StackPane(dot);
+//            dotWrapper.setMinSize(10, 10);  // 최소 크기 설정
+//            dotWrapper.setPrefSize(10, 10);  // 선호 크기 설정
+//
+//            dots.add(dot);
+//            dotsContainer.getChildren().add(dotWrapper);
+//        }
+//
+//        bubbleContainer.getChildren().add(dotsContainer);
+//
+//        HBox bubble = new HBox();
+//        bubble.getChildren().addAll(bubbleContainer);
+//        bubble.setAlignment(Pos.CENTER_LEFT);
+//
+//        typingIndicator.getChildren().add(bubble);
+//
+//        // 처음에는 보이지 않게 설정
+//        typingIndicator.setVisible(false);
+//        typingIndicator.setManaged(false);
+//    }
+//    /**
+//     * 타이핑 인디케이터 생성 메서드
+//     */
+//    private void createTypingIndicator() {
+//        // 타이핑 인디케이터 컨테이너
+//        typingIndicator = new HBox(8);
+//        typingIndicator.setPadding(new Insets(5, 10, 5, 10));
+//        typingIndicator.setAlignment(Pos.CENTER_LEFT);
+//
+//        // 말풍선 배경
+//        StackPane bubbleContainer = new StackPane();
+//        bubbleContainer.getStyleClass().add("message-bubble");
+//        bubbleContainer.getStyleClass().add("jpm-bubble"); // JPM 스타일 적용
+//        bubbleContainer.setPadding(new Insets(7.5, 12.5, 7.5, 12.5));
+//
+//        // 말풍선 꼬리 부분 (필요한 경우)
+//        Polygon tail = new Polygon();
+//        tail.getPoints().addAll(0.0, 0.0, 10.0, 10.0, 10.0, 0.0);
+//        tail.setFill(Color.WHITE);
+//
+//        // 말풍선 내용을 담을 HBox
+//        HBox contentBox = new HBox(10); // 텍스트와 점 사이 간격 10
+//        contentBox.setAlignment(Pos.CENTER_LEFT);
+//
+//        // "~~ 하는중" 텍스트 추가
+//        Label statusText = new Label("응답 생성 중");
+//        statusText.getStyleClass().add("typing-text");
+//        contentBox.getChildren().add(statusText);
+//
+//        // 3개의 점 생성
+//        dots = new ArrayList<>();
+//        HBox dotsContainer = new HBox(8);
+//
+//        for (int i = 0; i < 3; i++) {
+//            Circle dot = new Circle(4);
+//            // 모든 점의 중심을 동일하게 설정하여 애니메이션 중에도 정렬이 유지되도록 함
+//            dot.setCenterX(0);
+//            dot.setCenterY(0);
+//            dot.setFill(i == 0 ? Color.GRAY : Color.LIGHTGRAY);
+//
+//            // 각 점을 StackPane으로 감싸서 애니메이션 중에도 레이아웃이 안정적으로 유지되도록 함
+//            StackPane dotWrapper = new StackPane(dot);
+//            dotWrapper.setMinSize(10, 10);  // 최소 크기 설정
+//            dotWrapper.setPrefSize(10, 10);  // 선호 크기 설정
+//
+//            dots.add(dot);
+//            dotsContainer.getChildren().add(dotWrapper);
+//        }
+//
+//        // 텍스트와 점 컨테이너를 contentBox에 추가
+//        contentBox.getChildren().add(dotsContainer);
+//
+//        // contentBox를 말풍선 컨테이너에 추가
+//        bubbleContainer.getChildren().add(contentBox);
+//
+//        // 타이핑 인디케이터에 말풍선과 꼬리 추가
+//        HBox bubbleWithTail = new HBox();
+//        bubbleWithTail.getChildren().addAll(tail, bubbleContainer);
+//        bubbleWithTail.setAlignment(Pos.CENTER_LEFT);
+//
+//        typingIndicator.getChildren().add(bubbleWithTail);
+//
+//        // 처음에는 보이지 않게 설정
+//        typingIndicator.setVisible(false);
+//        typingIndicator.setManaged(false);
+//    }
     /**
      * 타이핑 인디케이터 생성 메서드
      */
@@ -333,10 +438,14 @@ public class MainView extends BorderPane {
         bubbleContainer.getStyleClass().add("jpm-bubble"); // JPM 스타일 적용
         bubbleContainer.setPadding(new Insets(7.5, 12.5, 7.5, 12.5));
 
-        // 말풍선 꼬리 부분 (필요한 경우)
-//        Polygon tail = new Polygon();
-//        tail.getPoints().addAll(0.0, 0.0, 10.0, 10.0, 10.0, 0.0);
-//        tail.setFill(Color.WHITE);
+        // 말풍선 내용을 담을 HBox
+        HBox contentBox = new HBox(10); // 10픽셀 간격
+        contentBox.setAlignment(Pos.CENTER_LEFT);
+
+        // "~~ 하는중" 텍스트 추가
+        typingStatusText = new Label("응답 준비 중");
+        typingStatusText.getStyleClass().add("typing-text");
+        contentBox.getChildren().add(typingStatusText);
 
         // 3개의 점 생성
         dots = new ArrayList<>();
@@ -358,15 +467,13 @@ public class MainView extends BorderPane {
             dotsContainer.getChildren().add(dotWrapper);
         }
 
-        bubbleContainer.getChildren().add(dotsContainer);
+        // 텍스트와 점 컨테이너를 contentBox에 추가
+        contentBox.getChildren().add(dotsContainer);
 
-//        // 타이핑 인디케이터에 말풍선과 꼬리 추가
-//        HBox bubbleWithTail = new HBox();
-//        bubbleWithTail.getChildren().addAll(tail, bubbleContainer);
-//        bubbleWithTail.setAlignment(Pos.CENTER_LEFT);
-//
-//        typingIndicator.getChildren().add(bubbleWithTail);
+        // contentBox를 말풍선 컨테이너에 추가
+        bubbleContainer.getChildren().add(contentBox);
 
+        // 타이핑 인디케이터에 말풍선 추가
         HBox bubble = new HBox();
         bubble.getChildren().addAll(bubbleContainer);
         bubble.setAlignment(Pos.CENTER_LEFT);
@@ -376,6 +483,18 @@ public class MainView extends BorderPane {
         // 처음에는 보이지 않게 설정
         typingIndicator.setVisible(false);
         typingIndicator.setManaged(false);
+    }
+
+    /**
+     * 타이핑 인디케이터 텍스트 설정 메서드
+     * @param text 표시할 텍스트
+     */
+    public void setTypingIndicatorText(String text) {
+        Platform.runLater(() -> {
+            if (typingStatusText != null) {
+                typingStatusText.setText(text);
+            }
+        });
     }
 
     /**
@@ -469,16 +588,81 @@ public class MainView extends BorderPane {
     // JPM 응답 처리 메서드 수정
     private void handleJpmResponse(String response) {
 
-        String[] splitted = response.split(";");
-        if (!splitted[0].equals("PROGRESS")) {
-            // 타이핑 인디케이터 숨기기
-            hideTypingIndicator();
-        }
-
-
         // JPM 메시지 추가 (UI 스레드에서 실행)
         Platform.runLater(() -> {
-            messages.add(new ChatMessage(response, ChatMessage.MessageType.JPM));
+            String[] command = response.split(";");
+            if(command.length != 0 && command[0].equals("PROGRESS")) {
+                // 타이핑 인디케이터 숨기기
+                hideTypingIndicator();
+
+                if(command[1].equals("JPM")) {
+                    String method = command[2];
+                    switch (method) {
+                        case "init":
+                            setTypingIndicatorText("jpm 프로젝트 중");
+                            showTypingIndicator();
+                            break;
+                        case "install":
+                            setTypingIndicatorText("설치 중");
+                            showTypingIndicator();
+                            break;
+                        case "update":
+                            setTypingIndicatorText("업데이트 중");
+                            showTypingIndicator();
+                            break;
+                        case "list":
+                            setTypingIndicatorText("리스트업 중");
+                            showTypingIndicator();
+                            break;
+                        case "delete":
+                            setTypingIndicatorText("삭제 중");
+                            showTypingIndicator();
+                            break;
+                        case "build":
+                            setTypingIndicatorText("빌드 중");
+                            showTypingIndicator();
+                            break;
+                        case "test":
+                            setTypingIndicatorText("프로젝트 테스트 중");
+                            showTypingIndicator();
+                            break;
+                        case "run":
+                            setTypingIndicatorText("프로젝트 실행 중");
+                            showTypingIndicator();
+                            break;
+                        case "clean":
+                            setTypingIndicatorText("프로젝트 빌드 초기화 중");
+                            showTypingIndicator();
+                            break;
+                        case "version":
+                            setTypingIndicatorText("프로젝트 버전 읽어오는 중");
+                            showTypingIndicator();
+                            break;
+                        case "setMain":
+                            setTypingIndicatorText("메인 클래스 설정 중");
+                            showTypingIndicator();
+                            break;
+                        case "getMetadata":
+                            setTypingIndicatorText("프로젝트 메타데이터 읽어오는 중");
+                            showTypingIndicator();
+                            break;
+                        case "refresh":
+                            setTypingIndicatorText("프로젝트 설정 적용 중");
+                            showTypingIndicator();
+                            break;
+                    }
+                }
+                else if(command[1].equals("GPT")) {
+                    if(command[2].equals("generate")) {
+                        setTypingIndicatorText("GPT 응답 생성 중");
+                        showTypingIndicator();
+                    }
+                }
+            }
+            else {
+                // 종료 코드도 따로 넣어줘야 함
+                messages.add(new ChatMessage(response, ChatMessage.MessageType.JPM));
+            }
             setProcessingState(false);
         });
     }
