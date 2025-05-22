@@ -612,11 +612,11 @@ public class MainView extends BorderPane {
                             showTypingIndicator();
                             break;
                         case "install":
-                            setTypingIndicatorText("설치 중: " + command[3]);
+                            setTypingIndicatorText("설치 중: " + command[3].split(":")[1]);
                             showTypingIndicator();
                             break;
                         case "update":
-                            setTypingIndicatorText("업데이트 중: " + command[3]);
+                            setTypingIndicatorText("업데이트 중: " + command[3].split(":")[1]);
                             showTypingIndicator();
                             break;
                         case "list":
@@ -624,7 +624,7 @@ public class MainView extends BorderPane {
                             showTypingIndicator();
                             break;
                         case "delete":
-                            setTypingIndicatorText("삭제 중: " + command[3]);
+                            setTypingIndicatorText("삭제 중: " + command[3].split(":")[1]);
                             showTypingIndicator();
                             break;
                         case "build":
