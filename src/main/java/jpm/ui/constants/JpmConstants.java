@@ -8,9 +8,9 @@ public class JpmConstants {
 //    private static final String DEBUG_JPM_CORE_PATH = "";
 //    private static final String RELEASE_JPM_CORE_PATH = "";
 
-    public static final String JPM_NLP_PATH = DEVELOPMENT_LEVEL == DevelopmentLevel.DEBUG
-            ? DEBUG_JPM_NLP_PATH
-            : RELEASE_JPM_NLP_PATH;
+//    public static final String JPM_NLP_PATH = DEVELOPMENT_LEVEL == DevelopmentLevel.DEBUG
+//            ? DEBUG_JPM_NLP_PATH
+//            : RELEASE_JPM_NLP_PATH;
 //
 //    public static final String JPM_CORE_PATH = DEVELOPMENT_LEVEL == DevelopmentLevel.DEBUG
 //            ? DEBUG_JPM_CORE_PATH

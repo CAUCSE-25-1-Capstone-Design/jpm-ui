@@ -533,7 +533,7 @@ public class MainView extends BorderPane {
                             setTypingIndicatorText("프로젝트 버전 읽어오는 중");
                             showTypingIndicator();
                             break;
-                        case "setMain":
+                        case "set":
                             setTypingIndicatorText("메인 클래스 설정 중");
                             showTypingIndicator();
                             break;

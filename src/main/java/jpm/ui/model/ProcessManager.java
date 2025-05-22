@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.URISyntaxException;
 
 /**
  * 외부 프로세스 실행 및 통신을 담당하는 클래스
@@ -19,7 +20,7 @@ public class ProcessManager {
 
     // 외부 프로세스 실행 경로 (실제 경로로 변경 필요)
     private final String pythonCommand; // 시스템에 맞는 Python 명령어 ("python" 또는 "python3")
-    private static final String NLP_SCRIPT_PATH = JpmConstants.JPM_NLP_PATH;
+    private String NLP_SCRIPT_PATH;
 
     private final Consumer<String> outputHandler; // 출력 처리 콜백
     private final Consumer<Integer> processCompletionCallback; // 프로세스 종료 후 콜백
@@ -41,6 +42,19 @@ public class ProcessManager {
      * @param outputHandler 프로세스 출력 처리 콜백
      */
     public ProcessManager(Consumer<String> outputHandler, Consumer<Integer> processCompletionCallback) {
+        try {
+            File jarFile = new File(ProcessManager.class.getProtectionDomain()
+                    .getCodeSource().getLocation().toURI());
+
+            // JAR이 위치한 디렉토리
+            File jarDir = jarFile.getParentFile();
+
+            // 그 디렉토리 기준으로 상대 경로 파일 지정
+            File script = new File(jarDir, "gpt-toolCall.py");
+            this.NLP_SCRIPT_PATH = script.getAbsolutePath();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         this.outputHandler = outputHandler;
         this.processCompletionCallback = processCompletionCallback;
         this.executorService = Executors.newCachedThreadPool();
