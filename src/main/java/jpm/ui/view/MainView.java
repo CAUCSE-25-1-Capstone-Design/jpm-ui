@@ -6,6 +6,8 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -40,6 +42,7 @@ public class MainView extends BorderPane {
     private int activeDotIndex = 0;
     private Timeline animation;
     private boolean isTyping = false;
+    ImageView icon = new ImageView(new Image(getClass().getResourceAsStream("/image/up-arrow3.png")));
 
     // 클래스 필드로 추가
     private Label typingStatusText;
@@ -80,10 +83,16 @@ public class MainView extends BorderPane {
         HBox.setHgrow(inputField, Priority.ALWAYS);
 
         // 전송 버튼 구성
-        sendButton = new Button("전송");
+
+        icon.setFitWidth(25);
+        icon.setFitHeight(25);
+
+        sendButton = new Button();
         sendButton.setId("send-button");
-        sendButton.setPrefWidth(60);
-        sendButton.setMinWidth(60);
+        sendButton.setGraphic(icon);
+        sendButton.setPrefSize(35, 35);
+        sendButton.setMaxSize(35, 35);
+        sendButton.setMinSize(35, 35);
 
 
         // ProgressIndicator 초기화
@@ -189,7 +198,7 @@ public class MainView extends BorderPane {
             if (isProcessing) {
                 progressIndicator.toFront();
             }
-            sendButton.setText(isProcessing ? "" : "전송");
+            sendButton.setGraphic(isProcessing ? null : icon);
 
             // 처리가 완료되면 입력 필드에 포커스 설정
             if (!isProcessing) {
